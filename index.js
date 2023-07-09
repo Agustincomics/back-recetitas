@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import * as dotenv from 'dotenv';
 import './src/database/dbConnection'
 import recetasRouter from './src/routes/recetas.routes'
-
+import usuarioRouter from './src/routes/usuarios.routes'
 dotenv.config();
 //configurar un puerto
 //crear una instancia de express
@@ -19,9 +19,11 @@ app.listen(app.get("port"), ()=>{
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-//app.use(morgan('dev'));
+app.use(morgan('dev'));
 
 //rutas
 // http://localhost:3004/productos
 
-app.use("/apireceta", recetasRouter)
+
+app.use("/apireceta", recetasRouter);
+app.use("/apireceta/auth", usuarioRouter)

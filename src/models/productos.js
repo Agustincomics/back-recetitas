@@ -11,7 +11,7 @@ const recetaScheme = new Schema({
     Instrucciones: {
         type: String,
         minLength:2,
-        maxLength:100000,
+        maxLength:1000000,
         unique: true,
         required: true
     },

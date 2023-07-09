@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { borrarReceta, crearReceta, editarReceta, obtenerRecetas } from "../controllers/recetas.controllers";
+import { check } from "express-validator";
+import { borrarReceta, crearReceta, editarReceta, obtenerReceta, obtenerRecetas } from "../controllers/recetas.controllers";
+import validarReceta from "../helpers/validarReceta";
 
 const router = Router()
 
@@ -9,6 +11,6 @@ const router = Router()
 
 router.route('/receta')
 .get(obtenerRecetas)
-.post(crearReceta)
-router.route('/receta/:id').delete(borrarReceta).put(editarReceta);
+.post(validarReceta, crearReceta)
+router.route('/receta/:id').delete(borrarReceta).put(validarReceta, editarReceta).get(obtenerReceta);
 export default router;
