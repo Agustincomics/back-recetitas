@@ -9,7 +9,6 @@ import {
 
 const router = Router();
 
-//agregar las validaciones con express-validator
 router
   .route("/")
   .post(

@@ -1,26 +1,25 @@
 import Usuario from "../models/usuarios";
+import bcrypt from 'bcrypt';
 
 export const login = async (req, res) => {
   try {
-    //verificar si existe un mail como el recibido
     const { email, contra } = req.body;
 
-    //verificar si el email ya existe
-    let usuario = await Usuario.findOne({ email }); //devulve un null
+    let usuario = await Usuario.findOne({ email }); 
     if (!usuario) {
-      //si el usuario existe
       return res.status(400).json({
         mensaje: "Correo o contra invalido - correo",
       });
     }
-    // si no es valido el contra
-    if (contra !== usuario.contra) {
+
+    const contraValida = bcrypt.compareSync(contra, usuario.contra);
+
+    if (!contraValida) {
       return res.status(400).json({
         mensaje: "Correo o contra invalido - contra",
       });
     }
 
-    //responder que el usuario es correcto
     res.status(200).json({
       mensaje: "El usuario existe",
       uid: usuario._id,
@@ -36,19 +35,19 @@ export const login = async (req, res) => {
 
 export const crearUsuario = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, contra } = req.body;
 
-    //verificar si el email ya existe
-    let usuario = await Usuario.findOne({ email }); //devulve un null
+    let usuario = await Usuario.findOne({ email }); 
     console.log(usuario);
     if (usuario) {
-      //si el usuario existe
       return res.status(400).json({
         mensaje: "ya existe un usuario con el correo enviado",
       });
     }
-    //guardamos el nuevo usuario en la BD
     usuario = new Usuario(req.body);
+    // editar el usuario para encriptar la contra
+    const salt = bcrypt.genSaltSync(10);
+    usuario.contra = bcrypt.hashSync(contra, salt)
 
     await usuario.save();
     res.status(201).json({
@@ -65,11 +64,8 @@ export const crearUsuario = async (req, res) => {
 };
 
 export const listarUsuarios = async (req, res) => {
-  // res.send("esto es una prueba de una peticion get");
   try {
-    //buscar en la BD la collection de productos
     const usuarios = await Usuario.find();
-    //envio la respuesta al frontend
     res.status(200).json(usuarios);
   } catch (error) {
     console.log(error);
